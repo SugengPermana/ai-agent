@@ -1,477 +1,60 @@
-# 🤖 Hermes AI Assistant — Gemini + Telegram
+# 🤖 Hermes AI Assistant
 
-A personal AI assistant built with **Hermes Agent**, **Google Gemini via AI Studio**, and **Telegram Bot**.
+> A personal AI assistant powered by Google Gemini, built with Hermes Agent, and remotely controlled through Telegram.
 
-This guide explains how to build your own AI assistant from scratch, configure Gemini as the LLM provider, and control the assistant remotely through Telegram.
+Hermes AI Assistant is a personal AI agent that combines **Hermes Agent** with **Google Gemini via AI Studio** and **Telegram Bot**.
 
-## Architecture
+The project was built to explore how modern AI agents can interact with LLMs, use tools, maintain context, and be accessed remotely through a conversational interface.
+
+---
+
+## ✨ Features
+
+* 🤖 AI assistant powered by Google Gemini
+* 🧠 AI agent capabilities through Hermes Agent
+* 💬 Telegram-based conversational interface
+* 🔌 Telegram Bot integration
+* 🛠️ Agent tool and skill integration
+* 💾 Agent memory and context
+* 🖥️ Runs locally through WSL2 / Linux
+* 🔐 User access control through Telegram user IDs
+* ⚙️ Configurable Gemini model provider
+* 🚀 Gateway-based communication between Telegram and the agent
+
+---
+
+## 🏗️ Architecture
 
 ```text
-┌─────────────────────┐
-│      Telegram       │
-│        User         │
-└──────────┬──────────┘
+┌──────────────────────┐
+│       Telegram       │
+│         User         │
+└──────────┬───────────┘
            │
            │ Telegram Bot API
            ▼
-┌─────────────────────┐
-│   Hermes Gateway    │
-│                     │
-│   Hermes AI Agent   │
-└──────────┬──────────┘
+┌──────────────────────┐
+│    Hermes Gateway    │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│     Hermes Agent     │
+│                      │
+│  Tools / Skills      │
+│  Memory / Context    │
+│  Agent Runtime       │
+└──────────┬───────────┘
            │
            │ Gemini API
            ▼
-┌─────────────────────┐
-│   Google AI Studio  │
-│       Gemini        │
-└─────────────────────┘
+┌──────────────────────┐
+│   Google AI Studio   │
+│       Gemini         │
+└──────────────────────┘
 ```
 
-The workflow is:
-
-**Telegram → Hermes Gateway → Hermes Agent → Gemini API → Hermes Agent → Telegram**
-
----
-
-# 📋 Requirements
-
-Before starting, make sure you have:
-
-* Windows 10/11
-* WSL2
-* Ubuntu
-* Git
-* Internet connection
-* Google account
-* Telegram account
-
-Hermes Agent currently supports Linux and WSL2. Native Windows is not supported, so Windows users should run Hermes inside WSL2.
-
----
-
-# 1. Install WSL2
-
-If you already have WSL2 and Ubuntu installed, you can skip this step.
-
-Open **PowerShell as Administrator**:
-
-```powershell
-wsl --install
-```
-
-Restart your computer after installation.
-
-Then open Ubuntu:
-
-```bash
-wsl
-```
-
-Verify:
-
-```bash
-uname -a
-```
-
-You should now be inside your Ubuntu environment.
-
----
-
-# 2. Install Git
-
-Update your packages:
-
-```bash
-sudo apt update
-```
-
-Install Git:
-
-```bash
-sudo apt install git -y
-```
-
-Verify:
-
-```bash
-git --version
-```
-
----
-
-# 3. Install Hermes Agent
-
-Install Hermes using the official installer:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
-```
-
-Reload your shell:
-
-```bash
-source ~/.bashrc
-```
-
-Verify the installation:
-
-```bash
-hermes --version
-```
-
-You should see the Hermes Agent version.
-
-Official Hermes documentation recommends this installation method for Linux/WSL2.
-
----
-
-# 4. Initialize Hermes
-
-Run:
-
-```bash
-hermes setup
-```
-
-Hermes will guide you through its initial configuration.
-
-After setup, Hermes stores its configuration under:
-
-```text
-~/.hermes/
-```
-
-Important files include:
-
-```text
-~/.hermes/
-├── config.yaml
-├── .env
-├── logs/
-├── memory/
-├── skills/
-└── personas/
-```
-
-The `.env` file is used for sensitive credentials, while `config.yaml` contains the main Hermes configuration.
-
----
-
-# 5. Create a Google AI Studio API Key
-
-Open Google AI Studio:
-
-https://aistudio.google.com/apikey
-
-Create an API key for your Google project.
-
-Keep this key private.
-
-> ⚠️ Never upload your Gemini API key to GitHub.
-
-Google's Gemini documentation recommends using API keys for authentication and provides key management through Google AI Studio.
-
----
-
-# 6. Configure Gemini
-
-Hermes supports Google Gemini as a native provider.
-
-Open the Hermes environment file:
-
-```bash
-nano ~/.hermes/.env
-```
-
-Add:
-
-```env
-GOOGLE_API_KEY=YOUR_GOOGLE_AI_STUDIO_API_KEY
-```
-
-For example:
-
-```env
-GOOGLE_API_KEY=AIzaSyxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-Save the file.
-
-You can also use:
-
-```env
-GEMINI_API_KEY=YOUR_GOOGLE_AI_STUDIO_API_KEY
-```
-
-Hermes checks both `GOOGLE_API_KEY` and `GEMINI_API_KEY` for the Gemini provider.
-
----
-
-# 7. Select Gemini as the Model Provider
-
-Run:
-
-```bash
-hermes model
-```
-
-Choose:
-
-```text
-Google AI Studio
-```
-
-Hermes should detect the API key and display the available Gemini models.
-
-Select the model you want to use.
-
-For example:
-
-```text
-gemini-3-flash-preview
-```
-
-The exact model list may change as Google releases or retires models.
-
----
-
-# 8. Verify Gemini Configuration
-
-Run:
-
-```bash
-hermes doctor
-```
-
-This checks whether Hermes can find the configured provider credentials.
-
-You can also start Hermes directly:
-
-```bash
-hermes
-```
-
-Then test it:
-
-```text
-Hello, introduce yourself.
-```
-
-If Hermes responds, your Gemini integration is working.
-
----
-
-# 9. Check the Hermes Configuration
-
-Your configuration should contain something similar to:
-
-```yaml
-model:
-  default: gemini-3-flash-preview
-  provider: gemini
-  base_url: https://generativelanguage.googleapis.com/v1beta
-```
-
-The exact model name may be different depending on which Gemini model you selected.
-
-The important parts are:
-
-```yaml
-provider: gemini
-```
-
-and:
-
-```yaml
-base_url: https://generativelanguage.googleapis.com/v1beta
-```
-
-Hermes uses this native Gemini API endpoint for the Google provider.
-
----
-
-# 10. Create a Telegram Bot
-
-Now we connect Hermes to Telegram.
-
-Open Telegram and search for:
-
-```text
-@BotFather
-```
-
-Start a conversation with BotFather.
-
-Run:
-
-```text
-/newbot
-```
-
-BotFather will ask for:
-
-### Bot name
-
-Example:
-
-```text
-Sugeng AI Assistant
-```
-
-### Bot username
-
-The username must end with:
-
-```text
-bot
-```
-
-Example:
-
-```text
-sugeng_ai_assistant_bot
-```
-
-BotFather will then provide a bot token similar to:
-
-```text
-123456789:AAxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-Save this token.
-
-> ⚠️ The Telegram bot token is a secret. Never commit it to GitHub.
-
----
-
-# 11. Get Your Telegram User ID
-
-Hermes can restrict the bot so only specific Telegram users can interact with it.
-
-One way to find your numeric Telegram user ID is to message:
-
-```text
-@userinfobot
-```
-
-It will return your numeric user ID.
-
-Example:
-
-```text
-123456789
-```
-
-Save this ID.
-
-Your Telegram username is **not** the same thing as your numeric user ID.
-
----
-
-# 12. Configure Telegram in Hermes
-
-Open:
-
-```bash
-nano ~/.hermes/.env
-```
-
-Add:
-
-```env
-TELEGRAM_BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
-TELEGRAM_ALLOWED_USERS=YOUR_TELEGRAM_USER_ID
-```
-
-Example:
-
-```env
-GOOGLE_API_KEY=AIzaSyxxxxxxxxxxxxxxxx
-
-TELEGRAM_BOT_TOKEN=123456789:AAxxxxxxxxxxxxxxxx
-
-TELEGRAM_ALLOWED_USERS=123456789
-```
-
-If you want to allow multiple Telegram users:
-
-```env
-TELEGRAM_ALLOWED_USERS=123456789,987654321
-```
-
-The allowlist is important because it prevents arbitrary Telegram users from accessing your assistant.
-
----
-
-# 13. Configure the Telegram Gateway
-
-Run:
-
-```bash
-hermes gateway setup
-```
-
-Select:
-
-```text
-Telegram
-```
-
-Follow the setup wizard.
-
-Depending on your Hermes version, it may ask for:
-
-```text
-Bot Token
-Allowed Telegram Users
-```
-
-Enter the credentials you created earlier.
-
----
-
-# 14. Start the Telegram Gateway
-
-Start Hermes Gateway:
-
-```bash
-hermes gateway start
-```
-
-Check the status:
-
-```bash
-hermes gateway status
-```
-
-You should see that the gateway is running.
-
----
-
-# 15. Test Your AI Assistant
-
-Open Telegram.
-
-Find your bot:
-
-```text
-@sugeng_ai_assistant_bot
-```
-
-Press:
-
-```text
-Start
-```
-
-Then send:
-
-```text
-Hello
-```
-
-The message flow should now be:
+### Message Flow
 
 ```text
 Telegram
@@ -484,328 +67,291 @@ Hermes Agent
    ↓
 Google Gemini API
    ↓
-Gemini Response
-   ↓
-Hermes Gateway
+Hermes Agent
    ↓
 Telegram
 ```
 
-Your AI assistant is now accessible through Telegram.
+The Telegram bot acts as the remote interface, while Hermes Agent handles the agent runtime and communicates with Gemini as the underlying language model.
 
 ---
 
-# 16. Test the Agent's Capabilities
+## 🧰 Tech Stack
 
-Because Hermes is an AI agent rather than just a basic chatbot, you can test tasks such as:
-
-```text
-Explain what files are inside my current project.
-```
-
-or:
-
-```text
-Check the current directory and summarize the project structure.
-```
-
-or:
-
-```text
-Create a simple Python script that checks the system information.
-```
-
-Depending on the enabled Hermes tools and permissions, the agent can interact with tools and perform multi-step tasks.
+| Technology           | Purpose                         |
+| -------------------- | ------------------------------- |
+| **Hermes Agent**     | AI agent runtime                |
+| **Google Gemini**    | Large Language Model            |
+| **Google AI Studio** | Gemini API provider             |
+| **Telegram Bot API** | Remote conversational interface |
+| **Python**           | Agent environment               |
+| **WSL2 / Ubuntu**    | Local runtime environment       |
+| **Git**              | Version control                 |
 
 ---
 
-# 17. Useful Hermes Commands
+## 📸 Screenshots
 
-### Start Hermes
+### Telegram Interface
+
+![Telegram Interface](./screenshots/telegram.png)
+
+The assistant can be accessed remotely through a Telegram bot.
+
+### Hermes Agent
+
+![Hermes Agent](./screenshots/hermes-terminal.png)
+
+Hermes Agent running locally through WSL2.
+
+### Gateway
+
+![Hermes Gateway](./screenshots/gateway.png)
+
+Hermes Gateway connecting the Telegram interface with the AI agent.
+
+### Architecture
+
+![Architecture](./screenshots/architecture.png)
+
+---
+
+## 🚀 Getting Started
+
+### Requirements
+
+Before installing the project, make sure you have:
+
+* Windows 10/11
+* WSL2
+* Ubuntu
+* Git
+* A Google account
+* Google AI Studio API key
+* Telegram account
+
+> Hermes Agent runs inside Linux/WSL2 rather than directly on native Windows.
+
+---
+
+## 📦 Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/SugengPermana/hermes-ai-assistant.git
+
+cd hermes-ai-assistant
+```
+
+Follow the complete installation guide:
+
+👉 [Installation Guide](./docs/installation.md)
+
+---
+
+## 🔑 Configuration
+
+The assistant requires credentials for:
+
+* Google Gemini
+* Telegram Bot
+
+Create your environment file:
+
+```bash
+cp .env.example .env
+```
+
+Then configure:
+
+```env
+GOOGLE_API_KEY=your_google_ai_studio_api_key
+
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+
+TELEGRAM_ALLOWED_USERS=your_telegram_user_id
+```
+
+For detailed configuration:
+
+👉 [Configuration Guide](./docs/configuration.md)
+
+---
+
+## 📱 Telegram Setup
+
+Create a Telegram bot using **BotFather**, configure the bot token, and allow your Telegram user ID to access the assistant.
+
+Detailed instructions:
+
+👉 [Telegram Setup Guide](./docs/telegram.md)
+
+---
+
+## ▶️ Running the Assistant
+
+Start Hermes:
 
 ```bash
 hermes
 ```
 
-### Select a model
-
-```bash
-hermes model
-```
-
-### Run diagnostics
-
-```bash
-hermes doctor
-```
-
-### Configure the gateway
-
-```bash
-hermes gateway setup
-```
-
-### Start the gateway
+To start the Telegram gateway:
 
 ```bash
 hermes gateway start
 ```
 
-### Check gateway status
+Check the gateway status:
 
 ```bash
 hermes gateway status
 ```
 
-### Stop the gateway
+Once the gateway is running, open your Telegram bot and send a message.
 
-```bash
-hermes gateway stop
-```
-
----
-
-# 18. Run Hermes in the Background
-
-If you want the Telegram bot to continue running without keeping the interactive terminal open:
-
-```bash
-hermes gateway start --daemon
-```
-
-Then check:
-
-```bash
-hermes gateway status
-```
-
-This allows the gateway to continue running in the background.
-
----
-
-# 19. Security
-
-There are several credentials in this project that must remain private.
-
-Never commit:
+Example:
 
 ```text
-~/.hermes/.env
+You:
+Hello, what can you help me with?
+
+AI Assistant:
+Hello! I can help you with...
 ```
-
-to GitHub.
-
-Your `.env` contains secrets such as:
-
-```env
-GOOGLE_API_KEY=...
-TELEGRAM_BOT_TOKEN=...
-```
-
-Add the following to `.gitignore` if you create a project repository around your configuration:
-
-```gitignore
-.env
-.hermes/
-*.key
-*.pem
-```
-
-If you accidentally expose an API key or Telegram bot token, revoke and regenerate it immediately.
 
 ---
 
-# 20. Recommended Project Structure
+## 🧠 Why I Built This
 
-A clean documentation repository can look like this:
+This project started as an experiment to understand how **AI agents differ from traditional chatbots**.
+
+Instead of only sending messages to an LLM and receiving responses, I wanted to explore how an agent can:
+
+* Understand user instructions
+* Interact with external tools
+* Execute multi-step tasks
+* Maintain context
+* Use custom skills
+* Connect to external interfaces
+* Operate as a personal assistant
+
+Telegram was chosen as the interface because it allows the assistant to be accessed remotely without building a dedicated frontend.
+
+---
+
+## 🔐 Security
+
+This project uses sensitive credentials such as:
+
+```text
+GOOGLE_API_KEY
+TELEGRAM_BOT_TOKEN
+```
+
+These credentials should **never be committed to GitHub**.
+
+The actual `.env` file is excluded through `.gitignore`.
+
+Only the example configuration should be committed:
+
+```text
+.env.example
+```
+
+Telegram access is also restricted using:
+
+```env
+TELEGRAM_ALLOWED_USERS=your_telegram_user_id
+```
+
+This prevents unauthorized Telegram users from interacting with the assistant.
+
+---
+
+## 📚 Documentation
+
+Detailed documentation is available in the `docs` directory.
+
+| Documentation                                | Description                              |
+| -------------------------------------------- | ---------------------------------------- |
+| [Architecture](./docs/architecture.md)       | How the system components communicate    |
+| [Installation](./docs/installation.md)       | Complete installation guide              |
+| [Configuration](./docs/configuration.md)     | Gemini and Hermes configuration          |
+| [Telegram Setup](./docs/telegram.md)         | Creating and connecting the Telegram bot |
+| [Troubleshooting](./docs/troubleshooting.md) | Common issues and solutions              |
+
+---
+
+## 📁 Project Structure
 
 ```text
 hermes-ai-assistant/
 │
 ├── README.md
+├── LICENSE
 ├── .gitignore
+├── .env.example
 │
 ├── docs/
 │   ├── architecture.md
+│   ├── installation.md
+│   ├── configuration.md
 │   ├── telegram.md
-│   └── gemini.md
+│   └── troubleshooting.md
+│
+├── config/
+│   └── config.example.yaml
 │
 └── screenshots/
-    ├── telegram-chat.png
+    ├── telegram.png
     ├── hermes-terminal.png
-    ├── gemini-config.png
-    └── gateway.png
-```
-
-Never put the actual `.env` file inside the repository.
-
----
-
-# 21. Troubleshooting
-
-## Hermes command not found
-
-Try:
-
-```bash
-source ~/.bashrc
-```
-
-Then:
-
-```bash
-hermes --version
-```
-
-If it still doesn't work, check:
-
-```bash
-echo $PATH
+    ├── gateway.png
+    └── architecture.png
 ```
 
 ---
 
-## Gemini API key error
+## 🚧 Future Improvements
 
-Run:
-
-```bash
-hermes doctor
-```
-
-Then check:
-
-```bash
-cat ~/.hermes/.env
-```
-
-Make sure the variable exists:
-
-```env
-GOOGLE_API_KEY=YOUR_KEY
-```
-
-Do not share the actual key publicly.
+* [ ] Add custom AI agent skills
+* [ ] Improve long-term memory
+* [ ] Add voice interaction
+* [ ] Add web search capabilities
+* [ ] Add scheduled tasks
+* [ ] Add more Telegram commands
+* [ ] Add Docker deployment
+* [ ] Add monitoring dashboard
+* [ ] Improve agent security and permissions
 
 ---
 
-## Telegram bot doesn't respond
+## 🎯 Learning Goals
 
-Check the gateway:
+Through this project, I explored:
 
-```bash
-hermes gateway status
-```
-
-Then run:
-
-```bash
-hermes doctor
-```
-
-Verify:
-
-```env
-TELEGRAM_BOT_TOKEN=...
-TELEGRAM_ALLOWED_USERS=...
-```
-
-Make sure your Telegram numeric user ID is included in the allowlist.
+* AI agent architecture
+* LLM integration
+* Google Gemini API
+* Telegram Bot API
+* Agent tools and skills
+* Local AI development
+* API authentication
+* Gateway architecture
+* Environment and secret management
+* Remote AI assistant interaction
 
 ---
 
-## Telegram says the bot doesn't exist
+## 👨‍💻 Author
 
-Make sure you are opening the exact username generated by BotFather.
+**Sugeng Permana**
 
-For example:
-
-```text
-@sugeng_ai_assistant_bot
-```
+Frontend & Backend Developer interested in AI agents, cloud technologies, and modern software development.
 
 ---
 
-## Gemini model is unavailable
+## 📄 License
 
-Don't hardcode an old model ID.
-
-Run:
-
-```bash
-hermes model
-```
-
-and select one of the currently available Gemini models.
-
-Google's model availability can change over time.
-
----
-
-# 22. Final Result
-
-After completing the setup, you will have your own self-hosted AI assistant:
-
-```text
-                    ┌─────────────────┐
-                    │    TELEGRAM     │
-                    │                 │
-                    │  "Hello Hermes" │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Telegram Bot API │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Hermes Gateway  │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │   Hermes Agent  │
-                    │                 │
-                    │  Tools / Skills │
-                    │  Memory / Agent │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  Google Gemini  │
-                    │   AI Studio     │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │  AI Response    │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │    TELEGRAM     │
-                    └─────────────────┘
-```
-
-## 🎯 What You Built
-
-This project combines:
-
-* **Hermes Agent** — AI agent runtime
-* **Google AI Studio / Gemini** — LLM provider
-* **Telegram Bot** — remote conversational interface
-* **Hermes Gateway** — communication layer between Telegram and the agent
-* **Hermes Tools & Skills** — agent capabilities
-* **Memory** — persistent agent context
-
-The result is a personal AI assistant that can be accessed remotely through Telegram while the actual agent runs on your own Linux/WSL2 environment.
-
----
-
-## 📚 References
-
-* Hermes Agent: https://github.com/NousResearch/hermes-agent
-* Google AI Studio: https://aistudio.google.com/
-* Gemini API Documentation: https://ai.google.dev/gemini-api/docs
-* Telegram Bot API: https://core.telegram.org/bots/api
+This project is licensed under the [MIT License](./LICENSE).
