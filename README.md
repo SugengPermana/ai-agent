@@ -8,6 +8,20 @@ The project was built to explore how modern AI agents can interact with LLMs, us
 
 ---
 
+### Hermes Agent
+
+![Hermes Agent](./result/Hermes.webp)
+
+Hermes Agent running locally through WSL2.
+
+### Telegram Interface
+
+![Telegram Interface](./result/Telegram.webp)
+
+The assistant can be accessed remotely through a Telegram bot.
+
+---
+
 ## ✨ Features
 
 * 🤖 AI assistant powered by Google Gemini
@@ -84,36 +98,7 @@ The Telegram bot acts as the remote interface, while Hermes Agent handles the ag
 | **Google Gemini**    | Large Language Model            |
 | **Google AI Studio** | Gemini API provider             |
 | **Telegram Bot API** | Remote conversational interface |
-| **Python**           | Agent environment               |
 | **WSL2 / Ubuntu**    | Local runtime environment       |
-| **Git**              | Version control                 |
-
----
-
-## 📸 Screenshots
-
-### Telegram Interface
-
-![Telegram Interface](./screenshots/telegram.png)
-
-The assistant can be accessed remotely through a Telegram bot.
-
-### Hermes Agent
-
-![Hermes Agent](./screenshots/hermes-terminal.png)
-
-Hermes Agent running locally through WSL2.
-
-### Gateway
-
-![Hermes Gateway](./screenshots/gateway.png)
-
-Hermes Gateway connecting the Telegram interface with the AI agent.
-
-### Architecture
-
-![Architecture](./screenshots/architecture.png)
-
 ---
 
 ## 🚀 Getting Started
@@ -125,7 +110,6 @@ Before installing the project, make sure you have:
 * Windows 10/11
 * WSL2
 * Ubuntu
-* Git
 * A Google account
 * Google AI Studio API key
 * Telegram account
@@ -156,21 +140,6 @@ The assistant requires credentials for:
 
 * Google Gemini
 * Telegram Bot
-
-Create your environment file:
-
-```bash
-cp .env.example .env
-```
-
-Then configure:
-
-```env
-GOOGLE_API_KEY=your_google_ai_studio_api_key
-
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-
-TELEGRAM_ALLOWED_USERS=your_telegram_user_id
 ```
 
 For detailed configuration:
@@ -310,20 +279,6 @@ hermes-ai-assistant/
     ├── gateway.png
     └── architecture.png
 ```
-
----
-
-## 🚧 Future Improvements
-
-* [ ] Add custom AI agent skills
-* [ ] Improve long-term memory
-* [ ] Add voice interaction
-* [ ] Add web search capabilities
-* [ ] Add scheduled tasks
-* [ ] Add more Telegram commands
-* [ ] Add Docker deployment
-* [ ] Add monitoring dashboard
-* [ ] Improve agent security and permissions
 
 ---
 

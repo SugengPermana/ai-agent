@@ -44,23 +44,12 @@ Hermes needs access to the Gemini API key in order to communicate with Google Ge
 
 Open the Hermes environment file:
 
-```bash
-nano ~/.hermes/.env
-```
-
-Add your API key:
-
-```env
-GOOGLE_API_KEY=your_google_ai_studio_api_key
-```
-
-Example:
-
-```env
-GOOGLE_API_KEY=AIzaSyxxxxxxxxxxxxxxxxxxxxxxxx
-```
+Google AI Studio API Key:
+YOUR_GOOGLE_AI_STUDIO_API_KEY
 
 Save the file.
+
+⚠️ Do not share the API key or include it in screenshots, Git commits, or public documentation.
 
 ---
 
@@ -68,21 +57,19 @@ Save the file.
 
 You can verify that the variable exists with:
 
-```bash
-echo $GOOGLE_API_KEY
-```
-
-However, avoid displaying or sharing the actual API key in screenshots or logs.
-
-For a safer check, use:
+After completing the provider setup, start Hermes:
 
 ```bash
-if [ -n "$GOOGLE_API_KEY" ]; then
-  echo "GOOGLE_API_KEY is configured"
-else
-  echo "GOOGLE_API_KEY is not configured"
-fi
+hermes
 ```
+
+Send a simple prompt:
+Hello. Introduce yourself.
+
+If Hermes successfully returns a response, the Gemini provider is working correctly.
+
+You can then test the model with:
+Explain what an AI agent is in simple terms.
 
 ---
 
@@ -389,21 +376,6 @@ GitHub:
         ├── TELEGRAM_BOT_TOKEN=your_telegram_bot_token
         └── TELEGRAM_ALLOWED_USERS=your_telegram_user_id
 ```
-
----
-
-# 🧪 Configuration Checklist
-
-Before moving to Telegram configuration, verify:
-
-* [ ] Google AI Studio account is available
-* [ ] Gemini API key has been created
-* [ ] `GOOGLE_API_KEY` is configured
-* [ ] Hermes can detect the Gemini provider
-* [ ] A currently available Gemini model is selected
-* [ ] `hermes doctor` runs successfully
-* [ ] Hermes can generate a response
-* [ ] API credentials are not committed to GitHub
 
 ---
 
